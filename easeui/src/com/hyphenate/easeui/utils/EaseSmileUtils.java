@@ -70,7 +70,7 @@ public class EaseSmileUtils {
 	public static final String ee_34 = "[(W)]";
 	public static final String ee_35 = "[(D)]";
 	
-	private static final Factory spannableFactory = Spannable.Factory
+	private static final Factory spannableFactory = Factory
 	        .getInstance();
 	
 	private static final Map<Pattern, Object> emoticons = new HashMap<Pattern, Object>();
@@ -78,9 +78,9 @@ public class EaseSmileUtils {
 
 	static {
 	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getData();
-	    for(int i = 0; i < emojicons.length; i++){
-	        addPattern(emojicons[i].getEmojiText(), emojicons[i].getIcon());
-	    }
+		for (EaseEmojicon emojicon : emojicons) {
+			addPattern(emojicon.getEmojiText(), emojicon.getIcon());
+		}
 	    EaseEmojiconInfoProvider emojiconInfoProvider = EaseUI.getInstance().getEmojiconInfoProvider();
 	    if(emojiconInfoProvider != null && emojiconInfoProvider.getTextEmojiconMapping() != null){
 	        for(Entry<String, Object> entry : emojiconInfoProvider.getTextEmojiconMapping().entrySet()){
