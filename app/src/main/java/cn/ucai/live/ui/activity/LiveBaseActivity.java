@@ -21,7 +21,7 @@ import cn.ucai.live.utils.Utils;
 
 import com.bumptech.glide.Glide;
 import cn.ucai.live.LiveConstants;
-import com.easemob.livedemo.R;
+import cn.ucai.live.R;
 import cn.ucai.live.data.TestAvatarRepository;
 import cn.ucai.live.ui.widget.BarrageLayout;
 import cn.ucai.live.ui.widget.LiveLeftGiftView;
