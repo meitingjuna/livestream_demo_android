@@ -49,10 +49,9 @@ import java.util.Random;
 public class LiveListFragment extends Fragment {
 
 
-
     // private ProgressBar pb;
     // private ListView listView;
-    private  LiveAdapter adapter;
+    private LiveAdapter adapter;
     private List<EMChatRoom> chatRoomList;
     private boolean isLoading;
     private boolean isFirstLoading = true;
@@ -102,7 +101,7 @@ public class LiveListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         footLoadingLayout = (LinearLayout) getView().findViewById(R.id.loading_layout);
-        footLoadingPB = (ProgressBar)getView().findViewById(R.id.loading_bar);
+        footLoadingPB = (ProgressBar) getView().findViewById(R.id.loading_bar);
         footLoadingText = (TextView) getView().findViewById(R.id.loading_text);
 //        listView.addFooterView(footView, null, false);
         footLoadingLayout.setVisibility(View.GONE);
@@ -123,12 +122,12 @@ public class LiveListFragment extends Fragment {
             @Override
             public void onChatRoomDestroyed(String roomId, String roomName) {
                 chatRoomList.clear();
-                if(adapter != null){
-                    getActivity().runOnUiThread(new Runnable(){
+                if (adapter != null) {
+                    getActivity().runOnUiThread(new Runnable() {
 
                         @Override
                         public void run() {
-                            if(adapter != null){
+                            if (adapter != null) {
                                 adapter.notifyDataSetChanged();
                                 loadAndShowData();
                             }
@@ -162,7 +161,7 @@ public class LiveListFragment extends Fragment {
             public void onRefresh() {
                 mSrl.setRefreshing(true);
                 mTvRefresh.setVisibility(View.VISIBLE);
-                cursor =null;
+                cursor = null;
                 loadAndShowData();
             }
         });
@@ -197,7 +196,7 @@ public class LiveListFragment extends Fragment {
             public void run() {
                 try {
                     isLoading = true;
-                    final EMCursorResult<EMChatRoom> result = EMClient.getInstance().chatroomManager().fetchPublicChatRoomsFromServer(pagesize,cursor);
+                    final EMCursorResult<EMChatRoom> result = EMClient.getInstance().chatroomManager().fetchPublicChatRoomsFromServer(pagesize, cursor);
                     //get chat room list
                     final List<EMChatRoom> chatRooms = result.getData();
                     L.e("LiveListFragment", "chatRooms=" + chatRooms.size());
@@ -207,18 +206,18 @@ public class LiveListFragment extends Fragment {
                             mSrl.setRefreshing(false);
                             mTvRefresh.setVisibility(View.GONE);
                             chatRoomList.addAll(chatRooms);
-                            if(chatRooms.size() != 0){
+                            if (chatRooms.size() != 0) {
                                 cursor = result.getCursor();
-                                if(chatRooms.size() == pagesize)
+                                if (chatRooms.size() == pagesize)
                                     footLoadingLayout.setVisibility(View.VISIBLE);
                             }
-                            if(isFirstLoading){
+                            if (isFirstLoading) {
 //                                pb.setVisibility(View.INVISIBLE);
                                 isFirstLoading = false;
-                                adapter = new LiveAdapter(getContext(),getLiveRoomList(chatRoomList));
+                                adapter = new LiveAdapter(getContext(), getLiveRoomList(chatRoomList));
                                 recyclerView.setAdapter(adapter);
-                            }else{
-                                if(chatRooms.size() < pagesize){
+                            } else {
+                                if (chatRooms.size() < pagesize) {
                                     hasMoreData = false;
                                     footLoadingLayout.setVisibility(View.VISIBLE);
                                     footLoadingPB.setVisibility(View.GONE);
@@ -249,7 +248,7 @@ public class LiveListFragment extends Fragment {
 
     public static List<LiveRoom> getLiveRoomList(List<EMChatRoom> chatRooms) {
         List<LiveRoom> roomList = new ArrayList<>();
-        for (EMChatRoom room:chatRooms) {
+        for (EMChatRoom room : chatRooms) {
             LiveRoom liveRoom = new LiveRoom();
             liveRoom.setName(room.getName());
             liveRoom.setAudienceNum(room.getAffiliationsCount());
@@ -268,10 +267,11 @@ public class LiveListFragment extends Fragment {
         private final List<LiveRoom> liveRoomList;
         private final Context context;
 
-        public LiveAdapter(Context context, List<LiveRoom> liveRoomList){
+        public LiveAdapter(Context context, List<LiveRoom> liveRoomList) {
             this.liveRoomList = liveRoomList;
             this.context = context;
         }
+
         @Override
         public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final PhotoViewHolder holder = new PhotoViewHolder(LayoutInflater.from(context).
@@ -282,8 +282,14 @@ public class LiveListFragment extends Fragment {
                 public void onClick(View v) {
                     final int position = holder.getAdapterPosition();
                     if (position == RecyclerView.NO_POSITION) return;
-                    context.startActivity(new Intent(context, LiveDetailsActivity.class)
-                            .putExtra("liveroom", liveRoomList.get(position)));
+                    LiveRoom room = liveRoomList.get(position);
+                    if (room.getAnchorId().equals(EMClient.getInstance().getCurrentUser())) {
+                        context.startActivity(new Intent(context,StartLiveActivity.class)
+                                .putExtra("liveId",room.getId()));
+                    } else {
+                        context.startActivity(new Intent(context, LiveDetailsActivity.class)
+                                .putExtra("liveroom", liveRoomList.get(position)));
+                    }
                 }
             });
             return holder;
@@ -311,7 +317,8 @@ public class LiveListFragment extends Fragment {
         ImageView imageView;
         @BindView(R.id.author)
         TextView anchor;
-        @BindView(R.id.audience_num) TextView audienceNum;
+        @BindView(R.id.audience_num)
+        TextView audienceNum;
 
         public PhotoViewHolder(View itemView) {
             super(itemView);
