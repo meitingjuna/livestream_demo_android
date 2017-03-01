@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:text="正在刷新"
+    android:textSize="18sp"
+    android:textColor="#89108e"
+    android:textStyle="bold">
+
+</TextView>
