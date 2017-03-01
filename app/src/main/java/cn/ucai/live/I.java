@@ -221,6 +221,8 @@ public interface I {
      * 客户端发送的用户给主播送礼物请求
      */
     String REQUEST_GET_CHALLROOM = "Live/getAllChatRoom";
+    String REQUEST_CREATE_CHALLROOM = "Live/createChatRoom";
+
     /**
      * 客户端发送的分页下载附近的人的请求
      */
