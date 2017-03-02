@@ -167,7 +167,7 @@ public class NetDao {
 
     public static void loadLiveList(Context context, OnCompleteListener<String> listener) {
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
-        utils.setRequestUrl(I.REQUEST_GET_CHALLROOM)
+        utils.setRequestUrl(I.REQUEST_GET_ALL_CHATROOM)
                 .targetClass(String.class)
                 .execute(listener);
     }
@@ -186,16 +186,24 @@ public class NetDao {
     }
 
 
-    public static void removeLive(Context context, String chatroomId, OnCompleteListener<String> listener) {
+    public static void removeLive(Context context, String chatroomId, OnCompleteListener<String> listener){
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
-        utils.setRequestUrl(I.REQUEST_DELETE_CHALLROOM)
-                .addParam("auth", "1IFgE")
-                .addParam("chatRoomId", chatroomId)
+        utils.setRequestUrl(I.REQUEST_DELETE_CHATROOM)
+                .addParam("auth","1IFgE")
+                .addParam("chatRoomId",chatroomId)
                 .targetClass(String.class)
                 .execute(listener);
     }
 
+    public static void loadAllGift(Context context,OnCompleteListener<String> listener){
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.BACK_MAIN_FROM_CHAT)
+                .targetClass(String.class)
+                .execute(listener);
+    }
 }
+
+
 
 
 

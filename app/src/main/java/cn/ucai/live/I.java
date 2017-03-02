@@ -2,6 +2,63 @@ package cn.ucai.live;
 
 public interface I {
 
+    public static interface User {
+        String TABLE_NAME = "t_superwechat_user";
+        String USER_NAME = "m_user_name";                    //用户账号
+        String PASSWORD = "m_user_password";                //用户密码
+        String NICK = "m_user_nick";                    //用户昵称
+    }
+
+    public static interface Contact {
+        String TABLE_NAME = "t_superwechat_contact";
+        String CONTACT_ID = "m_contact_id";                    //主键
+        String USER_NAME = "m_contact_user_name";            //用户账号
+        String CU_NAME = "m_contact_cname";                //好友账号
+    }
+
+    public static interface Group {
+        String TABLE_NAME = "t_superwechat_group";
+        String GROUP_ID = "m_group_id";                    //主键
+        String HX_ID = "m_group_hxid";                    //环信群组id
+        String NAME = "m_group_name";                    //群组名称
+        String DESCRIPTION = "m_group_description";            //群组简介
+        String OWNER = "m_group_owner";                //群组所有者－用户账号
+        String MODIFIED_TIME = "m_group_last_modified_time";    //最后修改时间
+        String MAX_USERS = "m_group_max_users";            //最大人数
+        String AFFILIATIONS_COUNT = "m_group_affiliations_count";    //群组人数
+        String IS_PUBLIC = "m_group_is_public";            //群组是否公开
+        String ALLOW_INVITES = "m_group_allow_invites";        //是否可以邀请
+    }
+
+    public static interface Member {
+        String TABLE_NAME = "t_superwechat_member";
+        String MEMBER_ID = "m_member_id";                    //主键
+        String USER_NAME = "m_member_user_name";            //用户账号
+        String GROUP_ID = "m_member_group_id";            //群组id
+        String GROUP_HX_ID = "m_member_group_hxid";            //群组环信id
+        String PERMISSION = "m_member_permission";            //用户对群组的权限\n0:普通用户\n1:群组所有者
+    }
+
+    public static interface Avatar {
+        String TABLE_NAME = "t_superwechat_avatar";
+        String AVATAR_ID = "m_avatar_id";                    //主键
+        String USER_NAME = "m_avatar_user_name";            //用户账号或者群组账号
+        String AVATAR_SUFFIX = "m_avatar_suffix";              //头像后缀名
+        String AVATAR_PATH = "m_avatar_path";                //保存路径
+        String AVATAR_TYPE = "m_avatar_type";                //头像类型：\n0:用户头像\n1:群组头像
+        String UPDATE_TIME = "m_avatar_last_update_time";    //最后更新时间
+    }
+
+    public static interface Location {
+        String TABLE_NAME = "t_superwechat_location";
+        String LOCATION_ID = "m_location_id";                //主键
+        String USER_NAME = "m_location_user_name";            //用户账号
+        String LATITUDE = "m_location_latitude";            //纬度
+        String LONGITUDE = "m_location_longitude";            //经度
+        String IS_SEARCHED = "m_location_is_searched";        //是否可以被搜索到
+        String UPDATE_TIME = "m_location_last_update_time";    //最后更新时间
+    }
+
     //	String AVATAR_PATH 								= 		"E:/test/";
     String ISON8859_1 = "iso8859-1";
     String UTF_8 = "utf-8";
@@ -71,9 +128,11 @@ public interface I {
     int MSG_LOCATION_GET_FAIL = 501;                            //获取附近的人失败
     int MSG_UNKNOW = 999;                            //未知错误
     int MSG_ILLEGAL_REQUEST = -1;                                //非法请求
+
     //	String SERVER_ROOT = "http://120.26.242.249:8080/SuperWeChatServerV2.0/";
+//	String SERVER_ROOT = "http://101.251.196.90:8000/SuperWeChatServerV2.0/";
     String SERVER_ROOT = "http://101.251.196.91:8888/SuperWeChatServerV2.0/";
-    //String SERVER_ROOT = "http://101.251.196.91:8888/SuperWeChatServerV2.0/";//swagger/index.html
+
     /**
      * 上传头像图片的类型：user_avatar或group_icon
      */
@@ -219,78 +278,51 @@ public interface I {
      */
     String REQUEST_UPDATE_LOCATION = "updateLocation";
     /**
-     * 客户端发送的用户给主播送礼物请求
-     */
-    String REQUEST_GET_CHALLROOM = "Live/getAllChatRoom";
-    //String REQUEST_CREATE_CHALLROOM = "Live/createChatRoom";
-    String REQUEST_CREATE_CHATROOM =  "live/createChatRoom";
-    String REQUEST_DELETE_CHALLROOM = "Live/deleteChatRoom";
-
-    /**
      * 客户端发送的分页下载附近的人的请求
      */
     String REQUEST_DOWNLOAD_LOCATION = "downloadLocation";
-    String BACK_MAIN_FROM_CHAT = "back_main_fron_chat";
+    /**
+     * 客户端发送的全部礼物信息并展示，包括礼物的名称、图片地址和价格的请求
+     */
+    String REQUEST_ALL_GIFTS = "live/getAllGifts";
+    /**
+     * 客户端发送的分页加载充值流水的请求
+     */
+    String REQUEST_RECHARGE_STATEMENTS_PAGE = "live/getRechargeStatements";
+    /**
+     * 客户端发送的根据用户名获取账户余额的请求
+     */
+    String REQUEST_BALANCE = "live/getBalance";
+    /**
+     * 客户端发送的统计主播收到礼物的次数、数量及礼物信息等的请求
+     */
+    String REQUEST_ANCHOR_GIFT = "live/getGiftStatementsByAnchor";
+    /**
+     * 客户端发送的用户给主播赠送礼物的请求
+     */
+    String REQUEST_GIVING_GIFT = "live/givingGifts";
+    /**
+     * 客户端发送的用户充值的请求
+     */
+    String REQUEST_RECHARGE = "live/recharge";
+    /**
+     * 客户端发送的用户给主播赠送礼物的请求
+     */
+    String REQUEST_GET_ALL_CHATROOM = "live/getAllChatRoom";
+    /**
+     * 客户端发送的创建直播室
+     */
+    String REQUEST_CREATE_CHATROOM = "live/createChatRoom";
+    /**
+     * 客户端发送的删除直播室
+     */
+    String REQUEST_DELETE_CHATROOM = "live/deleteChatRoom";
+
+
+    String BACK_MAIN_FROM_CHAT = "back_main_from_chat";
+
+
     int REQUESTCODE_PICK = 1;
     int REQUESTCODE_CUTTING = 2;
     int REQUESTCODE_MEMBER = 3;
-
-    public static interface User {
-        String TABLE_NAME = "t_superwechat_user";
-        String USER_NAME = "m_user_name";                    //用户账号
-        String PASSWORD = "m_user_password";                //用户密码
-        String NICK = "m_user_nick";                    //用户昵称
-    }
-
-    public static interface Contact {
-        String TABLE_NAME = "t_superwechat_contact";
-        String CONTACT_ID = "m_contact_id";                    //主键
-        String USER_NAME = "m_contact_user_name";            //用户账号
-        String CU_NAME = "m_contact_cname";                //好友账号
-    }
-
-    public static interface Group {
-        String TABLE_NAME = "t_superwechat_group";
-        String GROUP_ID = "m_group_id";                    //主键
-        String HX_ID = "m_group_hxid";                    //环信群组id
-        String NAME = "m_group_name";                    //群组名称
-        String DESCRIPTION = "m_group_description";            //群组简介
-        String OWNER = "m_group_owner";                //群组所有者－用户账号
-        String MODIFIED_TIME = "m_group_last_modified_time";    //最后修改时间
-        String MAX_USERS = "m_group_max_users";            //最大人数
-        String AFFILIATIONS_COUNT = "m_group_affiliations_count";    //群组人数
-        String IS_PUBLIC = "m_group_is_public";            //群组是否公开
-        String ALLOW_INVITES = "m_group_allow_invites";        //是否可以邀请
-    }
-
-    public static interface Member {
-        String TABLE_NAME = "t_superwechat_member";
-        String MEMBER_ID = "m_member_id";                    //主键
-        String USER_NAME = "m_member_user_name";            //用户账号
-        String GROUP_ID = "m_member_group_id";            //群组id
-        String GROUP_HX_ID = "m_member_group_hxid";            //群组环信id
-        String PERMISSION = "m_member_permission";            //用户对群组的权限\n0:普通用户\n1:群组所有者
-    }
-
-    public static interface Avatar {
-        String TABLE_NAME = "t_superwechat_avatar";
-        String AVATAR_ID = "m_avatar_id";                    //主键
-        String USER_NAME = "m_avatar_user_name";            //用户账号或者群组账号
-        String AVATAR_SUFFIX = "m_avatar_suffix";              //头像后缀名
-        String AVATAR_PATH = "m_avatar_path";                //保存路径
-        String AVATAR_TYPE = "m_avatar_type";                //头像类型：\n0:用户头像\n1:群组头像
-        String UPDATE_TIME = "m_avatar_last_update_time";    //最后更新时间
-    }
-
-    public static interface Location {
-        String TABLE_NAME = "t_superwechat_location";
-        String LOCATION_ID = "m_location_id";                //主键
-        String USER_NAME = "m_location_user_name";            //用户账号
-        String LATITUDE = "m_location_latitude";            //纬度
-        String LONGITUDE = "m_location_longitude";            //经度
-        String IS_SEARCHED = "m_location_is_searched";        //是否可以被搜索到
-        String UPDATE_TIME = "m_location_last_update_time";    //最后更新时间
-
-    }
-
 }
