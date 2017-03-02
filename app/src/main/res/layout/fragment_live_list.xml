@@ -16,6 +16,27 @@
 
             <include layout="@layout/layout_refresh_title" />
 
+            <LinearLayout
+                android:id="@+id/loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E8E7E5"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:id="@+id/loading_bar"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="4dp" />
+
+                <TextView
+                    android:id="@+id/loading_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="正在加载更多..." />
+
+            </LinearLayout>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycleview"
                 android:layout_width="match_parent"
@@ -26,26 +47,5 @@
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-
-    <LinearLayout
-        android:id="@+id/loading_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#E8E7E5"
-        android:gravity="center">
-
-        <ProgressBar
-            android:id="@+id/loading_bar"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="4dp" />
-
-        <TextView
-            android:id="@+id/loading_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="正在加载更多..." />
-
-    </LinearLayout>
 
 </LinearLayout>
