@@ -24,31 +24,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.live.data.NetDao;
-import cn.ucai.live.data.TestDataRepository;
-import cn.ucai.live.data.model.LiveRoom;
 import cn.ucai.live.data.model.LiveSettings;
 import cn.ucai.live.utils.CommonUtils;
-import cn.ucai.live.utils.L;
 import cn.ucai.live.utils.Log2FileUtil;
-
 import cn.ucai.live.R;
 import cn.ucai.live.utils.OnCompleteListener;
 import cn.ucai.live.utils.ResultUtils;
-
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.controller.EaseUI;
 import com.hyphenate.easeui.domain.User;
 import com.hyphenate.easeui.utils.EaseUserUtils;
-import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.ucloud.common.util.DeviceUtils;
 import com.ucloud.live.UEasyStreaming;
 import com.ucloud.live.UStreamingProfile;
 import com.ucloud.live.widget.UAspectFrameLayout;
-
-import java.util.List;
 import java.util.Random;
 
 public class StartLiveActivity extends LiveBaseActivity
@@ -114,16 +106,15 @@ public class StartLiveActivity extends LiveBaseActivity
         EaseUserUtils.setAppUserAvatar(StartLiveActivity.this, EMClient.getInstance().getCurrentUser(), userAvatar);
         EaseUserUtils.setAppUserNick(EMClient.getInstance().getCurrentUser(), usernameView);
         String id = getIntent().getStringExtra("liveId");
-        initEnv();
+
         if (id != null && !id.equals("")) {
             liveId=id;
             chatroomId = id;
         }else {
-            pd = new ProgressDialog(StartLiveActivity.this);
-            pd.setMessage("创建直播中...");
-            pd.show();
-            createLive();
+            liveId=EMClient.getInstance().getCurrentUser();
+
         }
+        initEnv();
 //        liveId = TestDataRepository.getLiveRoomId(EMClient.getInstance().getCurrentUser());
 //        chatroomId = TestDataRepository.getChatRoomId(EMClient.getInstance().getCurrentUser());
 //        anchorId = EMClient.getInstance().getCurrentUser();
@@ -215,11 +206,14 @@ public class StartLiveActivity extends LiveBaseActivity
     void startLive() {
 
         //demo为了测试方便，只有指定的账号才能开启直播
-        if (liveId == null) {
-            return;
+        if (chatroomId==null||chatroomId.equals("")) {
+            pd = new ProgressDialog(StartLiveActivity.this);
+            pd.setMessage("创建直播中...");
+            pd.show();
+            createLive();
+        }else {
+            startLiveByChatRoom();
         }
-
-        startLiveByChatRoom();
 
     }
     private void createLive() {
@@ -235,8 +229,9 @@ public class StartLiveActivity extends LiveBaseActivity
                             String id = ResultUtils.getEMResultFormJson(s);
                             if (id != null ) {
                                 success=true;
-                                initLive(id);
-                                //                 startLiveByChatRoom();
+                                chatroomId=id;
+
+                                startLiveByChatRoom();
                             }
                         }
                     }
@@ -311,12 +306,14 @@ public class StartLiveActivity extends LiveBaseActivity
     private void showConfirmCloseLayout() {
         //显示封面
         coverImage.setVisibility(View.VISIBLE);
-        List<LiveRoom> liveRoomList = TestDataRepository.getLiveRoomList();
-        for (LiveRoom liveRoom : liveRoomList) {
-            if (liveRoom.getId().equals(liveId)) {
-                coverImage.setImageResource(liveRoom.getCover());
-            }
-        }
+        EaseUserUtils.setAppUserAvatar(StartLiveActivity.this,EMClient.getInstance().getCurrentUser(),coverImage);
+
+//        List<LiveRoom> liveRoomList = TestDataRepository.getLiveRoomList();
+//        for (LiveRoom liveRoom : liveRoomList) {
+//            if (liveRoom.getId().equals(liveId)) {
+//                coverImage.setImageResource(liveRoom.getCover());
+//            }
+//        }
         View view = liveEndLayout.inflate();
         Button closeConfirmBtn = (Button) view.findViewById(R.id.live_close_confirm);
         TextView usernameView = (TextView) view.findViewById(R.id.tv_username);
