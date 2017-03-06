@@ -22,10 +22,16 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.live.I;
 import cn.ucai.live.LiveHelper;
+import cn.ucai.live.data.NetDao;
 import cn.ucai.live.data.model.Gift;
+import cn.ucai.live.data.model.Result;
+import cn.ucai.live.data.model.Wallet;
 import cn.ucai.live.ui.widget.PeriscopeLayout;
 import cn.ucai.live.ui.widget.RoomMessagesView;
+import cn.ucai.live.utils.CommonUtils;
+import cn.ucai.live.utils.OnCompleteListener;
 import cn.ucai.live.utils.PreferenceManager;
+import cn.ucai.live.utils.ResultUtils;
 import cn.ucai.live.utils.Utils;
 
 import com.bumptech.glide.Glide;
@@ -57,6 +63,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.baidu.location.b.g.w;
 
 /**
  * Created by wei on 2016/6/12.
@@ -131,8 +139,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
             public void run() {
                 leftGiftView.setVisibility(View.VISIBLE);
                 leftGiftView.setAvatar(message.getFrom());
-                leftGiftView.setName(message.getStringAttribute(I.User.NICK,message.getFrom()));
-                leftGiftView.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT,0));
+                leftGiftView.setName(message.getStringAttribute(I.User.NICK, message.getFrom()));
+                leftGiftView.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT, 0));
                 leftGiftView.setTranslationY(0);
                 ViewAnimator.animate(leftGiftView)
                         .alpha(0, 1)
@@ -177,7 +185,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
                 leftGiftView2.setVisibility(View.VISIBLE);
                 leftGiftView2.setAvatar(message.getFrom());
                 leftGiftView2.setName(nick);
-                leftGiftView2.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT,0));
+                leftGiftView2.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT, 0));
                 leftGiftView2.setTranslationY(0);
                 ViewAnimator.animate(leftGiftView2)
                         .alpha(0, 1)
@@ -281,11 +289,11 @@ public abstract class LiveBaseActivity extends BaseActivity {
                 if (username.equals(chatroomId)) {
                     if (message.getBooleanAttribute(LiveConstants.EXTRA_IS_BARRAGE_MSG, false)) {
                         barrageLayout.addBarrage(((EMTextMessageBody) message.getBody()).getMessage(),
-                                message.getFrom(),message.getStringAttribute(I.User.NICK,message.getFrom()));
+                                message.getFrom(), message.getStringAttribute(I.User.NICK, message.getFrom()));
                     }
                     messageView.refreshSelectLast();
                 } else {
-                    if(message.getChatType() == EMMessage.ChatType.Chat && message.getTo().equals(EMClient.getInstance().getCurrentUser())){
+                    if (message.getChatType() == EMMessage.ChatType.Chat && message.getTo().equals(EMClient.getInstance().getCurrentUser())) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -339,10 +347,10 @@ public abstract class LiveBaseActivity extends BaseActivity {
                     public void onMessageSend(String content) {
                         EMMessage message = EMMessage.createTxtSendMessage(content, chatroomId);
                         User user = EaseUserUtils.getAppUserInfo(EMClient.getInstance().getCurrentUser());
-                        message.setAttribute(I.User.NICK,user.getMUserNick());
+                        message.setAttribute(I.User.NICK, user.getMUserNick());
                         if (messageView.isBarrageShow) {
                             message.setAttribute(LiveConstants.EXTRA_IS_BARRAGE_MSG, true);
-                            barrageLayout.addBarrage(content, EMClient.getInstance().getCurrentUser(),user.getMUserNick());
+                            barrageLayout.addBarrage(content, EMClient.getInstance().getCurrentUser(), user.getMUserNick());
                         }
                         message.setChatType(EMMessage.ChatType.ChatRoom);
                         EMClient.getInstance().chatManager().sendMessage(message);
@@ -388,8 +396,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
         });
     }
 
-    protected void updateUnreadMsgView(){
-        if(isMessageListInited) {
+    protected void updateUnreadMsgView() {
+        if (isMessageListInited) {
             for (EMConversation conversation : EMClient.getInstance()
                     .chatManager()
                     .getAllConversations()
@@ -491,28 +499,28 @@ public abstract class LiveBaseActivity extends BaseActivity {
         showInputView();
     }
 
-    @OnClick(R.id.present_image) 
-	void onPresentImageClick() {
+    @OnClick(R.id.present_image)
+    void onPresentImageClick() {
         final RoomGiftListDialog dialog =
                 RoomGiftListDialog.newInstance();
         dialog.setGiftOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int id = (int) v.getTag();
-                showPayMentTip(dialog,id);
+                showPayMentTip(dialog, id);
             }
         });
         dialog.show(getSupportFragmentManager(), "RoomGiftListDialog");
     }
 
-    private void showPayMentTip(final RoomGiftListDialog dialog,final int id){
-        if (PreferenceManager.getInstance().getPayMentTip()){
-            sendGiftMsg(dialog,id);
-        }else{
+    private void showPayMentTip(final RoomGiftListDialog dialog, final int id) {
+        if (PreferenceManager.getInstance().getPayMentTip()) {
+            sendGiftMsg(dialog, id);
+        } else {
             Gift gift = LiveHelper.getInstance().getAppGiftList().get(id);
             final AlertDialog.Builder builder = new AlertDialog.Builder(LiveBaseActivity.this);
             builder.setTitle("提示")
-                    .setMessage("该礼物需要支付"+gift.getGprice()+",你确认支付么?");
+                    .setMessage("该礼物需要支付" + gift.getGprice() + ",你确认支付么?");
             View view = getLayoutInflater().inflate(R.layout.layout_payment_tip, null);
             CheckBox cb = (CheckBox) view.findViewById(R.id.payment_tips_nomore);
             cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -525,7 +533,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
             builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface d, int which) {
-                    sendGiftMsg(dialog,id);
+                    sendGiftMsg(dialog, id);
                 }
             }).setPositiveButton("取消", new DialogInterface.OnClickListener() {
                 @Override
@@ -537,30 +545,67 @@ public abstract class LiveBaseActivity extends BaseActivity {
         }
     }
 
-    private void sendGiftMsg(RoomGiftListDialog dialog,int id){
+//    public void sendGift(final Gift gift) {
+//        int change = PreferenceManager.getInstance().getCurrentuserChange();
+//        if (change >= gift.getGprice()) {
+//            NetDao.givindGift(LiveBaseActivity.this, EMClient.getInstance().getCurrentUser()
+//                    , chatroom.getOwner(), gift.getId(), 1, new OnCompleteListener<String>() {
+//                        @Override
+//                        public void onSuccess(String s) {
+//                            boolean success = false;
+//                            if (s != null) {
+//                                Result result = ResultUtils.getResultFromJson(s, Wallet.class);
+//                                if (result != null && result.isRetMsg()) {
+//                                    success = true;
+//                                    Wallet wallet = (Wallet) result.getRetData();
+//                                    PreferenceManager.getInstance().setCurrentuserChange(wallet.getBalance());
+//                                    sendGiftMsg(dialog, gift.getId());
+//
+//                                }
+//                            }
+//                            if (!success) {
+//                                CommonUtils.showShortToast("打赏失败");
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(String error) {
+//                            CommonUtils.showShortToast("打赏失败");
+//
+//                        }
+//                    });
+//        } else {
+//
+//        }
+//    }
+
+    private void sendGiftMsg(RoomGiftListDialog dialog, int id) {
         dialog.dismiss();
         User user = EaseUserUtils.getAppUserInfo(EMClient.getInstance().getCurrentUser());
         //User user = getAppUserInfo(EMClient.getInstance().getCurrentUser());
-        L.e(TAG,"send present,user="+user);
+        L.e(TAG, "send present,user=" + user);
         EMMessage message = EMMessage.createSendMessage(EMMessage.Type.CMD);
         message.setReceipt(chatroomId);
         EMCmdMessageBody cmdMessageBody = new EMCmdMessageBody(LiveConstants.CMD_GIFT);
         message.addBody(cmdMessageBody);
-        message.setAttribute(I.User.NICK,user.getMUserNick());
-        message.setAttribute(LiveConstants.CMD_GIFT,id);
+        message.setAttribute(I.User.NICK, user.getMUserNick());
+        message.setAttribute(LiveConstants.CMD_GIFT, id);
         message.setChatType(EMMessage.ChatType.ChatRoom);
         EMClient.getInstance().chatManager().sendMessage(message);
         showLeftGiftVeiw(message);
     }
 
-    @OnClick(R.id.chat_image) void onChatImageClick() {
+    @OnClick(R.id.chat_image)
+    void onChatImageClick() {
         ConversationListFragment fragment = ConversationListFragment.newInstance(anchorId, false);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.message_container, fragment)
                 .commit();
     }
 
-    @OnClick(R.id.screenshot_image) void onScreenshotImageClick(){
+    @OnClick(R.id.screenshot_image)
+    void onScreenshotImageClick() {
         Bitmap bitmap = screenshot();
         if (bitmap != null) {
             ScreenshotDialog dialog = new ScreenshotDialog(this, bitmap);
@@ -569,8 +614,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
 
     }
 
-    private Bitmap screenshot()
-    {
+    private Bitmap screenshot() {
         // 获取屏幕
         View dView = getWindow().getDecorView();
         dView.setDrawingCacheEnabled(true);
@@ -579,7 +623,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
         return bmp;
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
     }
 
@@ -594,27 +639,32 @@ public abstract class LiveBaseActivity extends BaseActivity {
             avatarRepository = new TestAvatarRepository();
         }
 
-        @Override public AvatarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public AvatarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new AvatarViewHolder(
                     LayoutInflater.from(context).inflate(R.layout.avatar_list_item, parent, false));
         }
 
-        @Override public void onBindViewHolder(AvatarViewHolder holder, final int position) {
+        @Override
+        public void onBindViewHolder(AvatarViewHolder holder, final int position) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     showUserDetailsDialog(namelist.get(position));
                 }
             });
-            EaseUserUtils.setAppUserAvatar(context,namelist.get(position),holder.Avatar);
+            EaseUserUtils.setAppUserAvatar(context, namelist.get(position), holder.Avatar);
         }
 
-        @Override public int getItemCount() {
+        @Override
+        public int getItemCount() {
             return namelist.size();
         }
     }
 
     static class AvatarViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.avatar) ImageView Avatar;
+        @BindView(R.id.avatar)
+        ImageView Avatar;
 
         public AvatarViewHolder(View itemView) {
             super(itemView);
