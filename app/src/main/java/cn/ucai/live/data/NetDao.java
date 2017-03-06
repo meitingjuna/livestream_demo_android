@@ -172,32 +172,39 @@ public class NetDao {
                 .execute(listener);
     }
 
-    public static void createLive(Context context, User user,OnCompleteListener<String> listener) {
+    public static void createLive(Context context, User user, OnCompleteListener<String> listener) {
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
         utils.setRequestUrl(I.REQUEST_CREATE_CHATROOM)
-                .addParam("auth","1IFgE")
-                .addParam("name",user.getMUserName()+"的直播")
-                .addParam("description",user.getMUserNick()+"的直播")
-                .addParam("owner",user.getMUserName())
-                .addParam("maxusers","300")
-                .addParam("members",user.getMUserName())
+                .addParam("auth", "1IFgE")
+                .addParam("name", user.getMUserName() + "的直播")
+                .addParam("description", user.getMUserNick() + "的直播")
+                .addParam("owner", user.getMUserName())
+                .addParam("maxusers", "300")
+                .addParam("members", user.getMUserName())
                 .targetClass(String.class)
                 .execute(listener);
     }
 
 
-    public static void removeLive(Context context, String chatroomId, OnCompleteListener<String> listener){
+    public static void removeLive(Context context, String chatroomId, OnCompleteListener<String> listener) {
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
         utils.setRequestUrl(I.REQUEST_DELETE_CHATROOM)
-                .addParam("auth","1IFgE")
-                .addParam("chatRoomId",chatroomId)
+                .addParam("auth", "1IFgE")
+                .addParam("chatRoomId", chatroomId)
                 .targetClass(String.class)
                 .execute(listener);
     }
 
-    public static void loadAllGift(Context context,OnCompleteListener<String> listener){
+    public static void loadAllGift(Context context, OnCompleteListener<String> listener) {
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
         utils.setRequestUrl(I.REQUEST_ALL_GIFTS)
+                .targetClass(String.class)
+                .execute(listener);
+    }
+    public static void loadChange(Context context,String username, OnCompleteListener<String> listener) {
+        OkHttpUtils<String> utils = new OkHttpUtils<>(context);
+        utils.setRequestUrl(I.REQUEST_BALANCE)
+                .addParam("uname",username)
                 .targetClass(String.class)
                 .execute(listener);
     }

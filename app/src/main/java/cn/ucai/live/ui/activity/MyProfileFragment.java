@@ -122,4 +122,8 @@ public class MyProfileFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
+    @OnClick(R.id.my_cahnge)
+public void myChange(){
+        MFGT.gotoChange(getActivity());
+    }
 }
