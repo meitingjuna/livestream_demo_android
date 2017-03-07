@@ -210,7 +210,8 @@ public class NetDao {
                 .execute(listener);
     }
 
-    public static void givindGift(Context context, String username, String anchor, int giftId, int count, OnCompleteListener<String> listener) {
+    public static void givindGift(Context context, String username, String anchor, int giftId, int count,
+                                  OnCompleteListener<String> listener) {
         OkHttpUtils<String> utils = new OkHttpUtils<>(context);
         utils.setRequestUrl(I.REQUEST_GIVING_GIFT)
                 .addParam("uname", username)
@@ -221,6 +222,7 @@ public class NetDao {
                 .execute(listener);
     }
 }
+
 
 
 
